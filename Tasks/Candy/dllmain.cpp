@@ -31,48 +31,24 @@ class DLLSolution : public Solution<DLLSolutionInput, DLLSolutionOutput> {
 
     static DLLSolutionOutput candy(DLLSolutionInput& Inputs) {
         // Each child gets at least once candy
-        DLLSolutionInput children(Inputs.size(), 1);
+        DLLSolutionInput candies(Inputs.size(), 1);
         // Convert to set for quicker iteration
-        std::set<int, std::less<>> SortedValues(Inputs.begin(), Inputs.end());
 
-        // Generate Map: value -> Indicies of value in Inputs
-        std::unordered_map<int, DLLSolutionInput> ValueIndexMap;
-
-        // Fill map
-        for (int i = 0; i < Inputs.size(); i++) ValueIndexMap[Inputs[i]].push_back(i);
-
-        for (const int Value : SortedValues) {
-            for (int const index : ValueIndexMap[Value]) {
-                int const Priority = static_cast<int>(std::distance(SortedValues.begin(), SortedValues.find(Value)));
-                // middle
-                if (index > 0 && index < Inputs.size() - 1) {
-                    int const left  = Inputs[index - 1];
-                    int const right = Inputs[index + 1];
-                    if (Value > left || Value > right) {
-                        if (Value != left || Value != right)
-                            children[index] = Priority;
-                        else
-                            children[index] = 1;
-                    } else
-                        children[index] = Priority;
-                } // left end
-                else if (index == 0) {
-                    int const right = Inputs[index + 1];
-                    if (Value > right) children[index] = Priority;
-                } // right end
-                else if (index == Inputs.size() - 1) {
-                    int const left = Inputs[index - 1];
-                    if (Value > left) children[index] = Priority;
-                }
+        for (int i = 1; i < Inputs.size(); i++) {
+            if (Inputs[i] > Inputs[i - 1]) {
+                candies[i] = candies[i - 1] + 1;
             }
-            std::printf("\tResult vector for value %d : %s\n", Value, VecToString(children).c_str());
         }
 
-        Inputs = children;
+        for (int i = static_cast<int>(Inputs.size()) - 2; i >= 0; i--) {
+            if (Inputs[i] > Inputs[i + 1]) {
+                candies[i] = max(candies[i], candies[i + 1] + 1);
+            }
+        }
 
-        std::printf("\tResult vector: %s\n", VecToString(children).c_str());
+        Inputs = candies;
 
-        return std::accumulate(children.begin(), children.end(), 0);
+        return std::accumulate(candies.begin(), candies.end(), 0);
     }
 };
 

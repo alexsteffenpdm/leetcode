@@ -29,14 +29,24 @@ class DLLSolution : public Solution<DLLSolutionInput, DLLSolutionOutput> {
     DLLSolutionOutput run(DLLSolutionInput& Inputs) override { return hIndex(Inputs); }
 
     static int hIndex(std::vector<int>& citations) {
+        int const        n = static_cast<int>(citations.size());
+        std::vector<int> count(n + 1, 0);
 
-        int const        index  = 0;
-        int const        cnt    = 0;
-        std::vector<int> sorted = citations;
-        std::sort(sorted.begin(), sorted.end(), std::greater<int>());
+        // Count how many papers have x citations
+        for (int const c : citations) {
+            if (c >= n) {
+                count[n]++; // Count everything >= n in count[n]
+            } else {
+                count[c]++;
+            }
+        }
 
-        for (int i = 1; i <= sorted.size(); i++) {
-            if (sorted[i - 1] <= i) return i;
+        // Now go backward to find the highest h such that
+        // at least h papers have >= h citations
+        int total = 0;
+        for (int h = n; h >= 0; h--) {
+            total += count[h];
+            if (total >= h) return h;
         }
 
         return 0;

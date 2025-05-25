@@ -1,16 +1,6 @@
 #include "framework.h" // Your shared interfaces & utilities
 #include "pch.h"
 
-enum class RomanNumbers : int {
-    I = 1,
-    V = 5,
-    X = 10,
-    L = 50,
-    C = 100,
-    D = 500,
-    M = 1000,
-};
-
 // Basic typdef for tests (Inputs, Outputs)
 using DLLSolutionInput  = std::string;
 using DLLSolutionOutput = int;
@@ -36,67 +26,35 @@ class DLLSolution : public Solution<DLLSolutionInput, DLLSolutionOutput> {
      */
     DLLSolutionOutput run(DLLSolutionInput& Inputs) override { return RomanToInt(Inputs); }
 
-    static int checkSecondary(char First, char Second) {
-        if (First == 'I') { // I
-            if (Second == 'V') return 4;
-            if (Second == 'X') return 9;
-
-            return static_cast<int>(RomanNumbers::I);
-        }
-        if (First == 'X') { // X
-            if (Second == 'L') return 40;
-            if (Second == 'C') return 90;
-
-            return static_cast<int>(RomanNumbers::X);
-        }
-        if (First == 'C') { // C
-            if (Second == 'D') return 400;
-            if (Second == 'M') return 900;
-
-            return static_cast<int>(RomanNumbers::C);
-        }
+    static int GetValue(char R) {
+        if (R == 'I') return 1;
+        if (R == 'V') return 5;
+        if (R == 'X') return 10;
+        if (R == 'L') return 50;
+        if (R == 'C') return 100;
+        if (R == 'D') return 500;
+        if (R == 'M') return 1000;
         return -1;
     }
 
     static int RomanToInt(std::string& S) {
-        int  Num            = 0;
-        bool bUsedSecondary = false;
-        for (int i = 0; i < S.size(); i++) {
-            char const C  = S.at(i);
-            char const C2 = i + 1 < S.size() ? S.at(i + 1) : 'n';
-            switch (C) {
-                case 'M':
-                    Num += static_cast<int>(RomanNumbers::M);
-                    break;
-                case 'D':
-                    Num += static_cast<int>(RomanNumbers::D);
-                    break;
-                case 'C':
-                    Num += checkSecondary(C, C2);
-                    bUsedSecondary = true;
-                    break;
-                case 'L':
-                    Num += static_cast<int>(RomanNumbers::L);
-                    break;
-                case 'X':
-                    Num += checkSecondary(C, C2);
-                    bUsedSecondary = true;
-                    break;
-                case 'V':
-                    Num += static_cast<int>(RomanNumbers::V);
-                    break;
-                case 'I':
-                    Num += checkSecondary(C, C2);
-                    bUsedSecondary = true;
-                    break;
-                default:
-                    break;
+        int Num = 0;
+
+        for (int i = 0; i < S.length(); i++) {
+            int const c1 = GetValue(S[i]);
+            if (i + 1 < S.length()) {
+                int const c2 = GetValue(S[i + 1]);
+                if (c1 >= c2) {
+                    Num += c1;
+                } else {
+                    Num += (c2 - c1);
+                    i++;
+                }
+            } else {
+                Num += c1;
             }
-
-            if (C2 != 'n' && bUsedSecondary) i++;
-
-            bUsedSecondary = false;
         }
+
         return Num;
     }
 };

@@ -10,7 +10,7 @@ using SolutionTest = TestCase<DLLSolutionInput, DLLSolutionOutput>;
 class DLLSolution : public Solution<DLLSolutionInput, DLLSolutionOutput> {
   public:
     // Change the name to represent your task
-    std::string name() const override { return "HIndex"; }
+    std::string name() const override { return "Remove Duplicates 2"; }
 
     DLLSolution() {
         // Create tests as vector entries (example below)

@@ -47,6 +47,10 @@ class Solution : public ISolutionBase {
     virtual S run(T& Inputs) = 0;
 
     virtual void RunTests() {
+        if (Tests.size() == 0) {
+            std::cout << "\tNo tests found." << std::endl;
+            return;
+        }
         for (TestCase<T, S>& Test : Tests) Test.validateResults(run(Test.Inputs));
     }
 };
