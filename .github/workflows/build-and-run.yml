@@ -25,4 +25,5 @@ jobs:
         shell: powershell
 
       - name: Run your executable
-        run: .\x64\Release\Leetcode.exe --runall
+        working-directory: x64/Release
+        run: .\Leetcode.exe --runall
