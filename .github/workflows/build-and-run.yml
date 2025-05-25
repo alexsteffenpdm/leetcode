@@ -1,0 +1,26 @@
+name: Build and Run Visual Studio Solution
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build-and-run:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup MSBuild path
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Build solution
+        run: msbuild Leetcode.sln /p:Configuration=Release
+
+      - name: Run your executable
+        run: |
+          # Adjust the path to your executable after build
+          .\x64\Release\Leetcode.exe --runall

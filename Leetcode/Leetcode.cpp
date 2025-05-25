@@ -6,7 +6,14 @@
 #include <vector>
 #include <windows.h>
 
-int main() {
+int main(int argc, char* argv[]) {
+
+    bool bRunAllDLLs = false;
+    if (argc == 2) {
+        if (std::string(argv[1]) == "--runall") {
+            bRunAllDLLs = true;
+        }
+    }
 
     std::vector<std::pair<std::string, std::unique_ptr<ISolutionBase>>> tasks;
     const std::string                                                   pluginDir = "./build";
@@ -41,6 +48,16 @@ int main() {
         }
         // std::unique_ptr<ISolutionBase> ExitTask = nullptr;
         tasks.emplace_back("Exit", nullptr);
+
+        if (bRunAllDLLs) {
+            for (int i = 0; i < tasks.size() - 1; i++) {
+                std::cout << "Running " << tasks[i].first << '\n';
+                tasks[i].second->RunTests();
+                std::cout << "Finished " << tasks[i].first << "\n" << '\n';
+            }
+
+            return 0;
+        }
 
         std::cout << "Available tasks:\n";
         for (size_t i = 0; i < tasks.size(); ++i) std::cout << "\t" << i + 1 << ". " << tasks[i].first << '\n';
