@@ -20,7 +20,9 @@ jobs:
       - name: Build solution
         run: msbuild Leetcode.sln /p:Configuration=Release
 
+      - name: Show directory tree of build folder
+        run: tree .\x64
+        shell: powershell
+
       - name: Run your executable
-        run: |
-          # Adjust the path to your executable after build
-          .\x64\Release\Leetcode.exe --runall
+        run: .\x64\Release\Leetcode.exe --runall
