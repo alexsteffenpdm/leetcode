@@ -1,15 +1,14 @@
+#include "framework.h" // Add additional headers here if needed
 #include "pch.h"
-#include "framework.h"  // Add additional headers here if needed
 
 // Basic typdef for tests (Inputs, Outputs)
-typedef std::vector<int> DLLSolutionInput;
-typedef int DLLSolutionOutput;
+using DLLSolutionInput  = std::vector<int>;
+using DLLSolutionOutput = int;
 
-typedef TestCase<DLLSolutionInput, DLLSolutionOutput> SolutionTest;
+using SolutionTest = TestCase<DLLSolutionInput, DLLSolutionOutput>;
 
-class DLLSolution : public Solution<DLLSolutionInput, DLLSolutionOutput>{
-public:
-
+class DLLSolution : public Solution<DLLSolutionInput, DLLSolutionOutput> {
+  public:
     // Change the name to represent your task
     std::string name() const override { return "Candy"; }
 
@@ -18,54 +17,60 @@ public:
         // Create tests as vector entries (example below)
         // Tests.push_back(SolutionTest::create({ 3,0,6,1,5 }, 3));
 
-        Tests.push_back(SolutionTest::create({ 1,0,2 }, 5));
-        Tests.push_back(SolutionTest::create({ 1,2,2 }, 4));
+        Tests.push_back(SolutionTest::create({1, 0, 2}, 5));
+        Tests.push_back(SolutionTest::create({1, 2, 2}, 4));
+
+        Tests.push_back(SolutionTest::create({1, 2, 87, 87, 87, 2, 1}, 13));
+        // Above test should be 13 with {1,2,3,1,3,2,1}
     };
 
-    /*  Run the custom function that represents your solution 
-    *   If no custom function is wanted, it can also be written here
-    */
-    DLLSolutionOutput run(DLLSolutionInput& Inputs) override {
-        return candy(Inputs);
-    }
+    /*  Run the custom function that represents your solution
+     *   If no custom function is wanted, it can also be written here
+     */
+    DLLSolutionOutput run(DLLSolutionInput& Inputs) override { return candy(Inputs); }
 
-    DLLSolutionOutput candy(DLLSolutionInput& Inputs) {
-        DLLSolutionInput children(Inputs.size(),0);
-        while (*std::max_element(Inputs.begin(), Inputs.end()) != 0) {
-            if (Inputs.size() < 3) {
-                std::cout << "Inputsize smaller than 3" << std::endl;
-                break;
+    static DLLSolutionOutput candy(DLLSolutionInput& Inputs) {
+        // Each child gets at least once candy
+        DLLSolutionInput children(Inputs.size(), 1);
+        // Convert to set for quicker iteration
+        std::set<int, std::less<>> SortedValues(Inputs.begin(), Inputs.end());
+
+        // Generate Map: value -> Indicies of value in Inputs
+        std::unordered_map<int, DLLSolutionInput> ValueIndexMap;
+
+        // Fill map
+        for (int i = 0; i < Inputs.size(); i++) ValueIndexMap[Inputs[i]].push_back(i);
+
+        for (const int Value : SortedValues) {
+            for (int const index : ValueIndexMap[Value]) {
+                int const Priority = static_cast<int>(std::distance(SortedValues.begin(), SortedValues.find(Value)));
+                // middle
+                if (index > 0 && index < Inputs.size() - 1) {
+                    int const left  = Inputs[index - 1];
+                    int const right = Inputs[index + 1];
+                    if (Value > left || Value > right) {
+                        if (Value != left || Value != right)
+                            children[index] = Priority;
+                        else
+                            children[index] = 1;
+                    } else
+                        children[index] = Priority;
+                } // left end
+                else if (index == 0) {
+                    int const right = Inputs[index + 1];
+                    if (Value > right) children[index] = Priority;
+                } // right end
+                else if (index == Inputs.size() - 1) {
+                    int const left = Inputs[index - 1];
+                    if (Value > left) children[index] = Priority;
+                }
             }
-
-            for (int i = 1; i < children.size() - 1; i++) {
-                int current = Inputs.at(i);
-                int left = Inputs.at(i - 1);
-                int right = Inputs.at(i + 1);
-
-                if (current > left && current > right)
-                    children.at(i)++;
-
-                if (left > current)
-                    children.at(i - 1)++;
-
-                if (right > current)
-                    children.at(i + 1)++;
-                
-            }
-            std::transform(Inputs.begin(), Inputs.end(), Inputs.begin(), [](int value) { return value - 1; });
-            std::string VecStr;
-            VecToString<int>(children, VecStr);
-            std::cout << VecStr << std::endl;
-            
+            std::printf("\tResult vector for value %d : %s\n", Value, VecToString(children).c_str());
         }
 
-        for (int i = 0; i < children.size(); i++) {
-            if (children.at(i) == 0)
-                children.at(i)++;
-        }   
-        std::string VecStr;
-        VecToString<int>(children, VecStr);
-        std::cout << "Final result: " << VecStr << std::endl;
+        Inputs = children;
+
+        std::printf("\tResult vector: %s\n", VecToString(children).c_str());
 
         return std::accumulate(children.begin(), children.end(), 0);
     }

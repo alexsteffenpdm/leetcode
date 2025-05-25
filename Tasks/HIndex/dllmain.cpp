@@ -1,15 +1,14 @@
+#include "framework.h" // Add additional headers here if needed
 #include "pch.h"
-#include "framework.h"  // Add additional headers here if needed
 
 // Basic typdef for tests (Inputs, Outputs)
-typedef std::vector<int> DLLSolutionInput;
-typedef int DLLSolutionOutput;
+using DLLSolutionInput  = std::vector<int>;
+using DLLSolutionOutput = int;
 
-typedef TestCase<DLLSolutionInput, DLLSolutionOutput> SolutionTest;
+using SolutionTest = TestCase<DLLSolutionInput, DLLSolutionOutput>;
 
-class DLLSolution : public Solution<DLLSolutionInput, DLLSolutionOutput>{
-public:
-
+class DLLSolution : public Solution<DLLSolutionInput, DLLSolutionOutput> {
+  public:
     // Change the name to represent your task
     std::string name() const override { return "HIndex"; }
 
@@ -18,31 +17,26 @@ public:
         // Create tests as vector entries (example below)
         // Tests.push_back(SolutionTest::create({ 3,0,6,1,5 }, 3));
 
-        Tests.push_back(SolutionTest::create({ 3,0,6,1,5 }, 3));
-        Tests.push_back(SolutionTest::create({ 3,0,6,1,5 }, 3));
-        Tests.push_back(SolutionTest::create({ 1 }, 1));
-        Tests.push_back(SolutionTest::create({ 100 }, 1));
-
+        Tests.push_back(SolutionTest::create({3, 0, 6, 1, 5}, 3));
+        Tests.push_back(SolutionTest::create({3, 0, 6, 1, 5}, 3));
+        Tests.push_back(SolutionTest::create({1}, 1));
+        Tests.push_back(SolutionTest::create({100}, 1));
     };
 
-    /*  Run the custom function that represents your solution 
-    *   If no custom function is wanted, it can also be written here
-    */
-    DLLSolutionOutput run(DLLSolutionInput& Inputs) override {
-        return hIndex(Inputs);
-    }
+    /*  Run the custom function that represents your solution
+     *   If no custom function is wanted, it can also be written here
+     */
+    DLLSolutionOutput run(DLLSolutionInput& Inputs) override { return hIndex(Inputs); }
 
-    int hIndex(std::vector<int>& citations) {
+    static int hIndex(std::vector<int>& citations) {
 
-        int index = 0;
-        int cnt = 0;
+        int const        index  = 0;
+        int const        cnt    = 0;
         std::vector<int> sorted = citations;
         std::sort(sorted.begin(), sorted.end(), std::greater<int>());
 
-        for (int i = 1; i <= sorted.size(); i++)
-        {
-            if (sorted[i - 1] <= i)
-                return i;
+        for (int i = 1; i <= sorted.size(); i++) {
+            if (sorted[i - 1] <= i) return i;
         }
 
         return 0;

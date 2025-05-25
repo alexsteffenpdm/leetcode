@@ -1,0 +1,37 @@
+Checks: >
+  clang-analyzer-*,
+  bugprone-*,
+  performance-*,
+  readability-*,
+  modernize-*,
+  cppcoreguidelines-*,
+  misc-*,
+  portability-*,
+  -clang-analyzer-cplusplus.NewDeleteLeaks,
+  -cppcoreguidelines-pro-type-vararg,
+  -cppcoreguidelines-owning-memory,
+  -cppcoreguidelines-avoid-magic-numbers,
+  -modernize-use-trailing-return-type,
+  -readability-magic-numbers,
+  -readability-identifier-naming,
+  -misc-non-private-member-variables-in-classes,
+  -readability-braces-around-statements,
+  -clang-diagnostic-error,
+  -misc-include-cleaner
+
+HeaderFilterRegex: 'E:/Development/Leetcode/.*'
+WarningsAsErrors: ''
+FormatStyle: file
+CheckOptions:
+  - key:             modernize-use-nullptr.NullMacros
+    value:           'NULL'
+  - key:             modernize-use-nullptr.WarnOnMacros
+    value:           '1'
+  - key:             readability-identifier-naming.VariableCase
+    value:           camelBack
+  - key:             readability-identifier-naming.ClassCase
+    value:           CamelCase
+  - key:             readability-identifier-naming.FunctionCase
+    value:           camelBack
+  - key:             readability-identifier-naming.PrivateMemberPrefix
+    value:           m_
